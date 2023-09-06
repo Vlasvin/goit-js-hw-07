@@ -25,22 +25,29 @@ function createImgCard({ galleryItems }) {
 function onImageContainerClick(evt) {
   evt.preventDefault();
   let originalImg = evt.target.dataset.source;
-  let currentLightbox = null;
-  let isLightboxOpen = false;
+  let isLightboxOpen = true;
   basicLightbox;
-  currentLightbox = basicLightbox.create(
+
+  if (evt.target.nodeName !== 'IMG') return;
+  const instance = basicLightbox.create(
     `
 		<img width="1400" height="900" src="${originalImg}">
-	`
+	`,
+    {
+      onShow: instance => {
+        window.addEventListener('keydown', closeByEscape);
+      },
+      onClose: instance => {
+        window.removeEventListener('keydown', closeByEscape);
+      },
+    }
   );
-  currentLightbox.show();
-  isLightboxOpen = true;
+  instance.show();
 
-  document.addEventListener('keyup', function (event) {
+  function closeByEscape(event) {
     if (event.code === 'Escape' && isLightboxOpen) {
-      currentLightbox.close();
+      instance.close();
       isLightboxOpen = false;
     }
-  });
+  }
 }
-// На жаль не знайшов  це: Бібліотека basicLightbox містить метод для програмного закриття модального вікна. Тому зробив так
